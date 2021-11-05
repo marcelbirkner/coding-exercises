@@ -57,7 +57,7 @@ ok  	fileprocessing	2.125s
 
 ```
 rm generatedfile.txt
-for i in {1..10000000}
+for i in {1..1000000}
 do
  echo "http://api.tech.com/item/${i}   ${i}" >> generatedfile.txt
 done
