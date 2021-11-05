@@ -64,7 +64,7 @@ func TestFileProcessingOfTestdataset2(t *testing.T) {
 func TestFileProcessingOfTestdataset3(t *testing.T) {
 	filepath := "testdata/testdataset-3.txt"
 
-	t.Run("Handle different whitespaces "+filepath, func(t *testing.T) {
+	t.Run("handle different whitespaces for "+filepath, func(t *testing.T) {
 		const maxEntries = 2
 
 		fp := FileProcessor{filepath}
@@ -82,17 +82,35 @@ func TestFileProcessingOfTestdataset3(t *testing.T) {
 
 }
 
-func TestFileProcessingOfEmptyFilet(t *testing.T) {
+func TestFileProcessingOfEmptyFile(t *testing.T) {
 	filepath := "testdata/empty-file.txt"
 
-	t.Run("expect empty list for empty file"+filepath, func(t *testing.T) {
+	t.Run("expect empty list for empty file "+filepath, func(t *testing.T) {
 		const maxEntries = 10
 		fp := FileProcessor{filepath}
 		got, err := fp.FindLargestEntriesInFile(maxEntries)
 		assertNoError(t, err)
 		assertEqual(t, len(got), 0)
 	})
+}
 
+func TestFileProcessingOfInvalidInputFile(t *testing.T) {
+	filepath := "testdata/testdataset-4.txt"
+
+	t.Run("ignore invalid lines in "+filepath, func(t *testing.T) {
+		const maxEntries = 2
+		fp := FileProcessor{filepath}
+		got, err := fp.FindLargestEntriesInFile(maxEntries)
+		assertNoError(t, err)
+
+		want := [maxEntries]string{"http://api.tech.com/item/5", "http://api.tech.com/item/3"}
+
+		for i := 0; i < maxEntries; i++ {
+			if got[i] != want[i] {
+				t.Errorf("got %s want %s", got[i], want[i])
+			}
+		}
+	})
 }
 
 func BenchmarkFindLargestEntriesInFile(b *testing.B) {

@@ -91,10 +91,14 @@ func (fp *FileProcessor) FindLargestEntriesInFile(resultSetSize int) ([]string, 
 		// parse line delimited by whitespace
 		line := scanner.Text()
 		fields := strings.Fields(line)
+		if len(fields) != 2 {
+			continue
+		}
 		url := fields[0]
 		count, err := strconv.ParseInt(fields[1], 10, 64)
 		if err != nil {
 			log.Fatal(err.Error())
+			continue
 		}
 
 		// fill list and map until resultSetSize is reached

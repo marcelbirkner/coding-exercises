@@ -51,6 +51,7 @@ ok  	fileprocessing	2.125s
 - [x] wrong filepath
 - [x] empty file
 - [x] handle different whitespaces
+- [x] ignore invalid lines
 
 # Create test files
 
