@@ -1,5 +1,11 @@
 # Run main program
 
+Program will ask for user input for absolute filepath. Expected format:
+
+```
+<url value> <whitespace> <long value>
+```
+
 ```
 go run fileprocessor.go
 ```
