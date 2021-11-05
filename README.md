@@ -36,10 +36,10 @@ ok  	fileprocessing	2.125s
 
 # Handle Edge Cases
 
-[x] validate user input
-[x] wrong filepath
-[x] empty file
-[x] handle different whitespaces
+- [x] validate user input
+- [x] wrong filepath
+- [x] empty file
+- [x] handle different whitespaces
 
 # Create test files
 
