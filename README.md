@@ -1,10 +1,15 @@
 # Run main program
 
-Program will ask for user input for absolute filepath. Expected format:
+Program will ask for user input for absolute filepath. This file is parsed line-by-line to be able to handle large files.
+URLs with the highest count are returned in decending order. By default the result is limited to 10 URLs.
+
+Expected file content:
 
 ```
 <url value> <whitespace> <long value>
 ```
+
+Run program:
 
 ```
 go run fileprocessor.go
