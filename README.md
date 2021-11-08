@@ -57,8 +57,9 @@ ok  	fileprocessing	2.125s
 
 ```
 rm generatedfile.txt
-for i in {1..1000000}
+for i in {1..100000}
 do
- echo "http://api.tech.com/item/${i}   ${i}" >> generatedfile.txt
+ randomNumber=$((1 + $RANDOM ))
+ echo "http://api.tech.com/item/${i} ${randomNumber}" >> generatedfile.txt
 done
 ```

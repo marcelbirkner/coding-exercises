@@ -17,8 +17,9 @@ const (
 
 // Errors returned by FileProcessor.
 const (
-	FileNotFoundErr   = FileProcessorErr("Unable to find file")
-	CannotOpenFileErr = FileProcessorErr("Cannot open file")
+	FileNotFoundErr       = FileProcessorErr("Unable to find file")
+	CannotOpenFileErr     = FileProcessorErr("Cannot open file")
+	ParsingInvalidLongErr = FileProcessorErr("Invalid syntax. Expecting a long value")
 )
 
 type FileProcessorErr string
@@ -39,8 +40,8 @@ type FileProcessor struct {
 // '<url value> <whitespace> <long value>'
 //
 // This file is parsed line-by-line to be able to handle large files.
-// URLs with the highest count are returned in decending order.
-// By default the result is limited to 10 URLs.
+// URLs with the highest count are returned in descending order.
+// By default, the result is limited to 10 URLs.
 //
 func main() {
 	fmt.Print("Please enter filename: ")
@@ -64,7 +65,7 @@ func main() {
 	}
 }
 
-// Idea behind implementation
+// FindLargestEntriesInFile Idea behind implementation
 //
 // The input file is processed line-by-line
 // Each line is parsed and split into "url" as string and "count" as int64
@@ -73,11 +74,11 @@ func main() {
 // Once all lines have been processed we take use the sorted list of keys and create a list of all URLs with the highest count
 func (fp *FileProcessor) FindLargestEntriesInFile(resultSetSize int) ([]string, error) {
 
-	// stores count as key and url as value. maximum number of items stored equals resultSetSize
+	// Stores count as key and url as value. maximum number of items stored equals resultSetSize
 	var resultMap = map[int64]string{}
 
-	// stores counts
-	countList := []int64{}
+	// Store highest counts in descending order
+	var countListDescendingOrder []int64
 
 	f, err := os.Open(fp.filepath)
 	if err != nil {
@@ -97,29 +98,23 @@ func (fp *FileProcessor) FindLargestEntriesInFile(resultSetSize int) ([]string, 
 		url := fields[0]
 		count, err := strconv.ParseInt(fields[1], 10, 64)
 		if err != nil {
-			log.Fatal(err.Error())
-			continue
+			return nil, ParsingInvalidLongErr
 		}
 
 		// fill list and map until resultSetSize is reached
-		if len(countList) < resultSetSize {
-			countList = append(countList, count)
-			resultMap[count] = url
-			sort.Slice(countList, func(i, j int) bool { return countList[i] > countList[j] })
+		if len(countListDescendingOrder) < resultSetSize {
+			// add new entry to result set
+			countListDescendingOrder = fp.storeItemInResultSet(countListDescendingOrder, count, resultMap, url)
 		} else {
-			// check if smallest item in countList is smaller than new count
-			smallestItemInCountList := countList[resultSetSize-1]
+			// check if smallest item in countListDescendingOrder is smaller than new count
+			smallestItemInCountList := countListDescendingOrder[resultSetSize-1]
 			if smallestItemInCountList < count {
-				// remove smallest item from list and map
+				// remove the smallest item from list and map
 				delete(resultMap, smallestItemInCountList)
-				countList = countList[:len(countList)-1]
+				countListDescendingOrder = countListDescendingOrder[:len(countListDescendingOrder)-1]
 
-				// add new item to list and map
-				countList = append(countList, count)
-				resultMap[count] = url
-
-				// sort countList
-				sort.Slice(countList, func(i, j int) bool { return countList[i] > countList[j] })
+				// add new entry to result set
+				countListDescendingOrder = fp.storeItemInResultSet(countListDescendingOrder, count, resultMap, url)
 			}
 		}
 	}
@@ -143,4 +138,15 @@ func (fp *FileProcessor) FindLargestEntriesInFile(resultSetSize int) ([]string, 
 	}
 
 	return resultList, nil
+}
+
+// Add item to countListDescendingOrder and resultMap
+// Sort countListDescendingOrder afterwards in descending order
+func (fp *FileProcessor) storeItemInResultSet(countListDescendingOrder []int64, count int64, resultMap map[int64]string, url string) []int64 {
+	countListDescendingOrder = append(countListDescendingOrder, count)
+	resultMap[count] = url
+
+	// sort countListDescendingOrder
+	sort.Slice(countListDescendingOrder, func(i, j int) bool { return countListDescendingOrder[i] > countListDescendingOrder[j] })
+	return countListDescendingOrder
 }
