@@ -52,6 +52,7 @@ ok  	fileprocessing	2.125s
 - [x] empty file
 - [x] handle different whitespaces
 - [x] ignore invalid lines
+- [x] handle lines with invalid long values
 
 # Create test files
 
